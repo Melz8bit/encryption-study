@@ -11,7 +11,7 @@ A progressive implementation of encryption techniques starting from classical ci
 | L1 | Caesar Cipher | Classical | ✅ Complete |
 | L1 | Vigenère Cipher | Classical | ✅ Complete |
 | L1 | Atbash Cipher | Classical | ✅ Complete |
-| L2 | Rail Fence Cipher | Transposition | Pending |
+| L2 | Rail Fence Cipher | Transposition | ✅ Complete |
 | L2 | Playfair Cipher | Substitution | Pending |
 | L2 | One-Time Pad | Substitution | Pending |
 | L3 | Rotor Simulation | Mechanical | Pending |
@@ -109,6 +109,38 @@ A fixed substitution cipher using the reversed alphabet — A becomes Z, B becom
 - Historically used in Hebrew texts (the name Atbash comes from the first, last, second, and second-to-last letters of the Hebrew alphabet)
 
 **Improvement over Caesar/Vigenère:** None from a security standpoint — it is weaker than both. Its value is as a stepping stone to understanding fixed substitution before moving to keyed and mechanical systems.
+
+---
+
+## Level 2 — Transposition & Substitution
+
+### Rail Fence Cipher
+
+A transposition cipher that arranges the message in a zigzag pattern across a fixed number of rails, then reads off each rail in order to produce the ciphertext. Unlike substitution ciphers, the letters themselves don't change — only their positions.
+
+**How it works:**
+- Letters are distributed across n rails in a bouncing zigzag pattern (down to the last rail, then back up)
+- Direction flips when hitting the top (rail 0) or bottom (rail n-1) rail
+- Encoded message is formed by concatenating each rail left to right from top to bottom
+
+**Example:** HELLOWORLD with 3 rails:
+
+```
+Rail 0: H . . . O . . . L .
+Rail 1: . E . L . W . R . D
+Rail 2: . . L . . . O . . .
+```
+
+Output: HOLELWRDLO
+
+**Complexity:** O(n) time, O(n) space — two passes through the message
+
+**Weaknesses:**
+- Only n-1 possible rail counts for a message of length n — small key space
+- Pattern is visible once the rail count is known
+- No substitution — letter frequency is fully preserved
+
+**Difference from Level 1:** Rail Fence is a transposition cipher — it rearranges letters rather than substituting them. Combined with a substitution cipher it becomes significantly harder to break.
 
 ---
 

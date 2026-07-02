@@ -12,7 +12,7 @@ A progressive implementation of encryption techniques starting from classical ci
 | L1 | Vigenère Cipher | Classical | ✅ Complete |
 | L1 | Atbash Cipher | Classical | ✅ Complete |
 | L2 | Rail Fence Cipher | Transposition | ✅ Complete |
-| L2 | Playfair Cipher | Substitution | Pending |
+| L2 | Playfair Cipher | Substitution | ✅ Complete |
 | L2 | One-Time Pad | Substitution | Pending |
 | L3 | Rotor Simulation | Mechanical | Pending |
 | L3 | Plugboard Simulation | Mechanical | Pending |
@@ -141,6 +141,32 @@ Output: HOLELWRDLO
 - No substitution — letter frequency is fully preserved
 
 **Difference from Level 1:** Rail Fence is a transposition cipher — it rearranges letters rather than substituting them. Combined with a substitution cipher it becomes significantly harder to break.
+
+---
+
+### Playfair Cipher
+
+A digraph substitution cipher that encrypts pairs of letters using a 5x5 grid built from a keyword. The most complex classical cipher — significantly harder to break than single-letter substitution.
+
+**How it works:**
+
+1. Build a 5x5 grid from the keyword (duplicates removed, I and J share a cell, remaining alphabet fills the rest)
+2. Prepare the message — strip non-letters, split into pairs, insert X between repeated letters in a pair, pad odd-length messages with X
+3. For each pair apply one of three rules:
+   - **Same row** — each letter shifts one column right (wrapping), left to decode
+   - **Same column** — each letter shifts one row down (wrapping), up to decode
+   - **Rectangle** — each letter takes the column of the other, keeping its own row (same for encode and decode)
+
+**Example:** HELLO with keyword KEYWORD → GYIZSC (X padding preserved on decode: HELXLO)
+
+**Complexity:** O(n) time, O(1) space for the grid (always 5x5)
+
+**Weaknesses:**
+- Vulnerable to digraph frequency analysis — common pairs like TH, HE still appear with higher frequency
+- Key space is larger than Caesar/Vigenère but still breakable with enough ciphertext
+- I and J are treated as the same letter — information loss
+
+**Improvement over previous ciphers:** Encrypts pairs instead of single letters, breaking simple frequency analysis. The rectangle rule creates non-linear relationships between plaintext and ciphertext.
 
 ---
 

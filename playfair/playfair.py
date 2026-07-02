@@ -65,9 +65,11 @@ def _get_coordinates(letter: str, cipher: list):
     return (row, col)
 
 
-def playfair(message: str, keyword: str):
+def playfair(message: str, keyword: str, is_encode: bool):
     message = message.upper()
     keyword = keyword.upper()
+
+    encode_modifier = 1 if is_encode else -1
 
     cipher_grid, cipher_alphabet = _generate_cipher(keyword)
     message_pairs = _message_prep(message)
@@ -80,16 +82,16 @@ def playfair(message: str, keyword: str):
     for pair in message_pairs:
         # Same row
         if letter_coordinates[pair[0]][0] == letter_coordinates[pair[1]][0]:
-            col_1 = (letter_coordinates[pair[0]][1] + 1) % 5
-            col_2 = (letter_coordinates[pair[1]][1] + 1) % 5
+            col_1 = (letter_coordinates[pair[0]][1] + (1 * encode_modifier)) % 5
+            col_2 = (letter_coordinates[pair[1]][1] + (1 * encode_modifier)) % 5
             encrypted += (
                 cipher_grid[letter_coordinates[pair[0]][0]][col_2]
                 + cipher_grid[letter_coordinates[pair[1]][0]][col_1]
             )
         # Same column
         elif letter_coordinates[pair[0]][1] == letter_coordinates[pair[1]][1]:
-            row_1 = (letter_coordinates[pair[0]][0] + 1) % 5
-            row_2 = (letter_coordinates[pair[1]][0] + 1) % 5
+            row_1 = (letter_coordinates[pair[0]][0] + (1 * encode_modifier)) % 5
+            row_2 = (letter_coordinates[pair[1]][0] + (1 * encode_modifier)) % 5
             encrypted += (
                 cipher_grid[row_1][letter_coordinates[pair[0]][1]]
                 + cipher_grid[row_2][letter_coordinates[pair[1]][1]]
@@ -106,4 +108,5 @@ def playfair(message: str, keyword: str):
     print(f"{encrypted=}")
 
 
-playfair("hello", "keyword")
+playfair("hello", "keyword", True)
+playfair("GYIZSC ", "keyword", False)

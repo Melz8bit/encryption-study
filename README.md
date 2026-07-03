@@ -13,7 +13,7 @@ A progressive implementation of encryption techniques starting from classical ci
 | L1 | Atbash Cipher | Classical | ✅ Complete |
 | L2 | Rail Fence Cipher | Transposition | ✅ Complete |
 | L2 | Playfair Cipher | Substitution | ✅ Complete |
-| L2 | One-Time Pad | Substitution | Pending |
+| L2 | One-Time Pad | Substitution | ✅ Complete |
 | L3 | Rotor Simulation | Mechanical | Pending |
 | L3 | Plugboard Simulation | Mechanical | Pending |
 | L3 | Reflector Simulation | Mechanical | Pending |
@@ -167,6 +167,45 @@ A digraph substitution cipher that encrypts pairs of letters using a 5x5 grid bu
 - I and J are treated as the same letter — information loss
 
 **Improvement over previous ciphers:** Encrypts pairs instead of single letters, breaking simple frequency analysis. The rectangle rule creates non-linear relationships between plaintext and ciphertext.
+
+---
+
+### One-Time Pad
+
+A theoretically unbreakable cipher that XORs each byte of the message against a corresponding byte from a truly random key. The key must be at least as long as the message and never reused.
+
+**How it works:**
+- Generate a cryptographically random key the same length as the message using `os.urandom()`
+- XOR each message byte against the corresponding key byte
+- Key and ciphertext are both represented as hex strings for portability
+- Decryption is identical — XOR the ciphertext bytes with the same key bytes
+
+**Why XOR works:**
+- `message XOR key = ciphertext`
+- `ciphertext XOR key = message`
+- XOR is its own inverse — applying it twice with the same key recovers the original
+
+**Example:**
+```
+message:    hello  →  68 65 6c 6c 6f  (hex bytes)
+key:                  23 c1 44 7b 7c  (random hex)
+ciphertext:           4b a4 28 17 13  (XOR result)
+```
+
+**Complexity:** O(n) time, O(n) space
+
+**Why it's unbreakable (when used correctly):**
+- The key is truly random — no pattern to exploit
+- The key is the same length as the message — no repetition
+- The key is never reused — no statistical analysis possible
+- Without the key, every possible plaintext is equally likely
+
+**Conditions that break it:**
+- Key reuse — the Soviet Union's reuse of OTP keys allowed the US Venona project to break their communications
+- Non-random key generation — predictable keys can be brute forced
+- Key interception — security depends entirely on keeping the key secret
+
+**Improvement over previous ciphers:** The only cipher with mathematical proof of perfect secrecy. Every previous cipher can be broken given enough ciphertext — OTP cannot, when used correctly.
 
 ---
 

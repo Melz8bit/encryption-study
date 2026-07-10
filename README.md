@@ -14,7 +14,7 @@ A progressive implementation of encryption techniques starting from classical ci
 | L2 | Rail Fence Cipher | Transposition | ✅ Complete |
 | L2 | Playfair Cipher | Substitution | ✅ Complete |
 | L2 | One-Time Pad | Substitution | ✅ Complete |
-| L3 | Rotor Simulation | Mechanical | Pending |
+| L3 | Rotor Simulation | Mechanical | ✅ Complete |
 | L3 | Plugboard Simulation | Mechanical | Pending |
 | L3 | Reflector Simulation | Mechanical | Pending |
 | L4 | Enigma Machine | Mechanical | Pending |
@@ -206,6 +206,44 @@ ciphertext:           4b a4 28 17 13  (XOR result)
 - Key interception — security depends entirely on keeping the key secret
 
 **Improvement over previous ciphers:** The only cipher with mathematical proof of perfect secrecy. Every previous cipher can be broken given enough ciphertext — OTP cannot, when used correctly.
+
+---
+
+## Level 3 — Mechanical Concepts
+
+### Rotor Simulation
+
+A simulation of the Enigma Machine's core component — a rotor that applies a position-dependent substitution cipher, stepping forward after every letter encrypted.
+
+**How it works:**
+- Each rotor has a fixed wiring — a scrambled alphabet mapping (Rotor I wiring used)
+- The current position offsets the input before wiring lookup and offsets the output after
+- After each letter the rotor steps forward one position (mod 26)
+- The same starting position must be used for encode and decode
+
+**Encoding a letter:**
+1. Convert letter to index (A=0, Z=25)
+2. Shift index forward by current position (mod 26)
+3. Look up shifted index in wiring
+4. Shift output back by current position (mod 26)
+5. Step rotor forward
+
+**Decoding a letter:**
+1. Convert letter to index
+2. Shift index forward by current position (mod 26)
+3. Find shifted letter's position in wiring (reverse lookup)
+4. Shift output back by current position (mod 26)
+5. Step rotor forward
+
+**Wiring used (Rotor I):**
+```
+Input:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+Output: EKMFLGDQVZNTOWYHXUSPAIBRCJ
+```
+
+**Complexity:** O(n) time, O(1) space
+
+**What makes it powerful:** The substitution changes with every letter — the same letter typed twice produces different outputs. This is what separates the Enigma from all previous static ciphers.
 
 ---
 

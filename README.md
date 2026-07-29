@@ -15,9 +15,9 @@ A progressive implementation of encryption techniques starting from classical ci
 | L2 | Playfair Cipher | Substitution | ✅ Complete |
 | L2 | One-Time Pad | Substitution | ✅ Complete |
 | L3 | Rotor Simulation | Mechanical | ✅ Complete |
-| L3 | Plugboard Simulation | Mechanical | Pending |
-| L3 | Reflector Simulation | Mechanical | Pending |
-| L4 | Enigma Machine | Mechanical | Pending |
+| L3 | Plugboard Simulation | Mechanical | ✅ Complete |
+| L3 | Reflector Simulation | Mechanical | ✅ Complete |
+| L4 | Enigma Machine | Mechanical | ✅ Complete |
 
 ---
 
@@ -244,6 +244,89 @@ Output: EKMFLGDQVZNTOWYHXUSPAIBRCJ
 **Complexity:** O(n) time, O(1) space
 
 **What makes it powerful:** The substitution changes with every letter — the same letter typed twice produces different outputs. This is what separates the Enigma from all previous static ciphers.
+
+---
+
+### Plugboard Simulation
+
+A simulation of the Enigma Machine's plugboard (Steckerbrett) — a panel of letter pairs that swaps letters before they enter the rotors and again after they exit. The plugboard is its own inverse — applying it twice returns the original letter.
+
+**How it works:**
+- A dictionary maps each connected letter to its pair
+- Unconnected letters pass through unchanged
+- The swap is symmetric — if A→B then B→A
+- Encode and decode are identical operations
+
+**Typical Enigma configuration:**
+- 10 pairs connected, 6 letters left unconnected
+- Applied before the rotors and after the rotors
+
+**Complexity:** O(n) time, O(1) space — dictionary lookup is O(1)
+
+**Why a function not a class:** The plugboard has no state — it's a pure transformation. A function is the right abstraction.
+
+**What it adds to Enigma:** The plugboard dramatically increases the key space. With 10 pairs chosen from 26 letters there are over 150 trillion possible plugboard configurations — multiplied against the rotor starting positions this makes brute force effectively impossible.
+
+---
+
+### Reflector Simulation
+
+A simulation of the Enigma Machine's reflector (Umkehrwalze) — a fixed, stationary component that bounces the signal back through the rotors a second time, doubling the encryption. The reflector is its own inverse and never steps.
+
+**How it works:**
+- A fixed wiring maps each letter to a unique partner (Reflector B used)
+- The mapping is always symmetric — if A→Y then Y→A
+- No letter maps to itself — this was the fatal flaw that aided codebreakers
+- No encode/decode distinction — applying it twice returns the original letter
+- Never steps — it has no position state
+
+**Wiring (Reflector B / UKW-B):**
+```
+Input:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+Output: YRUHQSLDPXNGOKMIEBFZCWVJAT
+```
+
+**Complexity:** O(n) time, O(1) space
+
+**The fatal flaw:** Because no letter can map to itself, Alan Turing's bombe machine could eliminate impossible rotor configurations by testing whether any letter encrypted to itself. This dramatically reduced the search space and made cracking feasible.
+
+**Why a function not a class:** The reflector has no state — it never steps and its wiring never changes. A pure function is the right abstraction.
+
+---
+
+## Level 4 — Enigma Machine
+
+### Enigma Machine
+
+A full working simulation of the German Enigma Machine — combining the plugboard, three rotors, and reflector into a complete encryption system. Symmetric by design: the same operation with the same settings encodes and decodes.
+
+**Signal path (per keypress):**
+1. Plugboard — swap letter if connected
+2. Rotor 1 steps, then encodes letter forward
+3. Rotor 2 steps (if rotor 1 completed full rotation), then encodes forward
+4. Rotor 3 steps (if rotor 2 completed full rotation), then encodes forward
+5. Reflector — bounces signal back
+6. Rotor 3 decodes backward
+7. Rotor 2 decodes backward
+8. Rotor 1 decodes backward
+9. Plugboard — swap letter again
+10. Output letter
+
+**Symmetry:** No encode/decode mode — the same operation with the same rotor starting positions encodes and decodes. HELLO → MMGAS → HELLO.
+
+**Rotor stepping (odometer mechanic):**
+- Rotor 1 steps every keypress
+- Rotor 2 steps when rotor 1 completes a full rotation (every 26 keypresses)
+- Rotor 3 steps when rotor 2 completes a full rotation (every 676 keypresses)
+
+**Components used:**
+- Plugboard — 10 hardcoded letter pairs
+- Rotor I wiring — EKMFLGDQVZNTOWYHXUSPAIBRCJ
+- Reflector B wiring — YRUHQSLDPXNGOKMIEBFZCWVJAT
+
+**Complexity:** O(n) time — constant work per letter regardless of message length
+
+**Historical note:** The actual Enigma used 3-5 rotors chosen from a set of 8, variable plugboard settings, and ring settings on each rotor — creating over 10^23 possible configurations. Our implementation uses fixed settings for clarity but the core mechanics are identical.
 
 ---
 
